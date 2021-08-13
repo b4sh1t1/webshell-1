@@ -90,7 +90,7 @@ async def webshell(web_session: WebSocket):
     print(web_session.query_string)
     print(web_session.query_params)
     print(web_session.path)
-    ip, port, user, passwd = '10.57.19.239', 22, 'admin', 'qa@207'  # 定义全局变量连接信息.
+    ip, port, user, passwd = '127.0.0.2', 22, 'admin', 'pwd'  # 定义全局变量连接信息.
 
     ip = web_session.query_params.get('ip') or ip
     port = web_session.query_params.get('port') or port
