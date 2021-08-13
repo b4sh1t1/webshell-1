@@ -1,3 +1,5 @@
+__doc__ = """ https://aliashkevich.com/websockets-in-django-3-1/ """
+
 import json
 import typing as t
 from urllib import parse
@@ -77,6 +79,8 @@ class QueryParams:
 
 
 class WebSocket:
+    """websocket对asgi协议的简单实现"""
+
     def __init__(self, scope, receive, send):
         self._scope = scope
         self._receive = receive
@@ -107,6 +111,12 @@ class WebSocket:
     @property
     def scope(self):
         return self._scope
+
+    @property
+    def status(self):
+        if self._client_state == State.DISCONNECTED:
+            return False
+        return True
 
     async def accept(self, subprotocol: str = None):
         """Accept connection.
@@ -170,22 +180,22 @@ class WebSocket:
     async def receive_json(self) -> t.Any:
         message = await self.receive()
         self._test_if_can_receive(message)
-        return json.loads(message["text"])
+        return json.loads(message.get("text"))
 
     async def receive_jsonb(self) -> t.Any:
         message = await self.receive()
         self._test_if_can_receive(message)
-        return json.loads(message["bytes"].decode())
+        return json.loads(message.get("bytes").decode())
 
     async def receive_text(self) -> str:
         message = await self.receive()
         self._test_if_can_receive(message)
-        return message["text"]
+        return message.get("text", "")
 
     async def receive_bytes(self) -> bytes:
         message = await self.receive()
         self._test_if_can_receive(message)
-        return message["bytes"]
+        return message.get("bytes", b"")
 
     async def send_json(self, data: t.Any, **dump_kwargs):
         data = json.dumps(data, **dump_kwargs)
@@ -204,6 +214,8 @@ class WebSocket:
         await self.send({"type": SendEvent.SEND, "bytes": text})
 
     def _test_if_can_receive(self, message: t.Mapping):
+        if message["type"] == ReceiveEvent.DISCONNECT:
+            self._client_state = State.DISCONNECTED
+            return
         assert message["type"] == ReceiveEvent.RECEIVE, (
-                'Invalid message type "%s". Was connection accepted?' % message["type"]
-        )
+                'Invalid message type "%s". Was connection accepted?' % message["type"])
