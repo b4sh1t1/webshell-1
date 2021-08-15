@@ -1,5 +1,4 @@
 import paramiko
-import subprocess
 
 
 class Base:
@@ -34,6 +33,9 @@ class RemoteSSH(Base):
         self._ssh.connect(hostname=host, port=port, username=user, password=password, pkey=k)
         self._chanel = self._ssh.invoke_shell(term='xterm')
 
+    def session(self) -> (paramiko.SSHClient, paramiko.Channel):
+        return self._ssh, self._chanel
+
     def resize(self, cols, rows):
         self._chanel.resize_pty(width=cols, height=rows)
 
@@ -46,19 +48,18 @@ class RemoteSSH(Base):
     def close(self):
         self._chanel.close()
 
-
-class LocalSSH(Base):
-    def __init__(self):
-        pass
-
-    def read(self, size=1024):
-        with subprocess.Popen(['sudo', 'python3', '-u', 'inline_print.py'], stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, bufsize=0, universal_newlines=True) as p:
-            for line in p.stdout:
-                line = str(line.rstrip())
-                await websocket.send(line)
-                p.stdout.flush()
-            for line in p.stderr:
-                line = str(line.rstrip())
-                await websocket.send(line)
-                p.stdout.flush()
+# class LocalSSH(Base):
+#     def __init__(self):
+#         pass
+#
+#     def read(self, size=1024):
+#         with subprocess.Popen(['sudo', 'python3', '-u', 'inline_print.py'], stdout=subprocess.PIPE,
+#                               stderr=subprocess.PIPE, bufsize=0, universal_newlines=True) as p:
+#             for line in p.stdout:
+#                 line = str(line.rstrip())
+#                 await websocket.send(line)
+#                 p.stdout.flush()
+#             for line in p.stderr:
+#                 line = str(line.rstrip())
+#                 await websocket.send(line)
+#                 p.stdout.flush()

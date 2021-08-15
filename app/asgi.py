@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/3.1/howto/deployment/asgi/
 # asgi.py
 import os
 from django.core.asgi import get_asgi_application
-from websocket.warp import warp as distribute_protocol
+from webshell.warp import warp as distribute_protocol
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 
@@ -22,7 +22,7 @@ application = distribute_protocol(application)
 async def application(scope, receive, send):
     if scope['type'] == 'http':
         await application(scope, receive, send)
-    elif scope['type'] == 'websocket':
+    elif scope['type'] == 'webshell':
         await websocket_application(scope, receive, send)
     else:
         raise NotImplementedError(f"Unknown scope type {scope['type']}")
@@ -32,18 +32,18 @@ async def websocket_application(scope, receive, send):
     while True:
         event = await receive()
 
-        if event['type'] == 'websocket.connect':
+        if event['type'] == 'webshell.connect':
             await send({
-                'type': 'websocket.accept'
+                'type': 'webshell.accept'
             })
 
-        if event['type'] == 'websocket.disconnect':
+        if event['type'] == 'webshell.disconnect':
             break
 
-        if event['type'] == 'websocket.receive':
+        if event['type'] == 'webshell.receive':
             if event['text'] == 'ping':
                 await send({
-                    'type': 'websocket.send',
+                    'type': 'webshell.send',
                     'text': 'pong!'
                 })
 """

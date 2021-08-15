@@ -1,5 +1,5 @@
 from django.urls import resolve
-from websocket.connection import WebSocket
+from webshell.connection import WebSocket
 
 
 def warp(app):

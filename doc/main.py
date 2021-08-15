@@ -62,7 +62,7 @@ start_server = websockets.serve(main_logic, '10.10.6.91', 5678)
 # import functools
 # start_server = websockets.serve(functools.partial(main_logic, other_param="test_value"), '10.10.6.91', 5678)
 # 修改被回调函数定义，增加相应参数
-# async def main_logic(websocket, path, other_param)
+# async def main_logic(webshell, path, other_param)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()

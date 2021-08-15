@@ -20,6 +20,7 @@ from app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.IndexView.as_view()),
-    path("wbshell/", views.websocket_view),
-    path("ws/", views.websocket_view),
+    path("webshell/", views.webshell_view),
+    path("ws/", views.echo_view),
+    path("time/", views.time_view),
 ]
